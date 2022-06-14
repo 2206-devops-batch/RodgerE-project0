@@ -1,7 +1,7 @@
-
+import random
 # character initialization for a later feature
-player_stats = {'hp': 10, 'strength': 2, 'armor': 4, 'avail_actions': ["Attack", "Defend", "Spells", "Flee"], 'current action': 'attacking'} # an observe action may be fun
-monster_stats = {'hp': 5, 'strength': 5, 'armor': 1, 'avail_actions': ["Attack", "Defend"], 'current action': 'attacking'}
+player_stats = {'hp': 10, 'strength': 2, 'armor': 4, 'avail_actions': ("attack", "defend", "flee"), 'current action': 'attacking'} # an observe action may be fun
+monster_stats = {'hp': 5, 'strength': 5, 'armor': 1, 'avail_actions': ("attack", "defend"), 'current action': 'attacking'}
 
 def set_attacking(activeCharacter):
     # sets the current character's current action to 'attacking'
@@ -23,12 +23,29 @@ def planning_phase():
     # calls for monster's action, maybe a rng
     # after setting the board passes to combat
     # print('How will you proceed? \n\n\tAttack, Defend, Spells, or Flee: ')
-    player_action = input('How will you proceed? \n\n\tAttack, Defend, Spells, or Flee: ').lower().rstrip()
+    valid_input = False
+    
+    while not valid_input:
+        player_action = input('How will you proceed? \n\n\tAttack, Defend, or Flee: ').lower().rstrip()
+        for action in player_stats['avail_actions']:
+            if action == player_action:
+                valid_input = True
+                break
 
     if player_action == 'attack':
         set_attacking('Player')
     elif player_action == 'defend':
-        set_defending('Player')
+        set_defending('Player')                                                                                     # We should loop until a valid input, combat will berak if not
+    elif player_action == 'flee':
+        if random.randint(0, 100) > 80:
+            print("You run for your life, barely getting away from the beast.")
+            player_stats['current action'] = "fleeing-success"
+        else:
+            print("You attempt to break away, but the monster blocks your way.")
+            player_stats['current action'] = "fleeing-fail"
+    # else:
+    #     print("Please select an available option. \n\n\tAttack, Defend, Spells, or Flee: ")
+    #     player_action = input('How will you proceed? \n\n\tAttack, Defend, Spells, or Flee: ').lower().rstrip()
 
     # for now monster will always defend. A separate function will decide monster behavior
     set_defending('Monster')
@@ -54,9 +71,11 @@ def combat_phase():
             damage = 0 # if armor > strength then damage to hp is 0
         monster_stats['hp'] = monster_stats['hp'] - damage
         print('\nYou thrust at the monster with your weapon, but it was prepared for your strike and gets by with only a glancing strike')
+    elif player_stats['current action'] == 'fleeing-success':
+            return #break combat
 
     # monster's combat
-    if pAction == 'attacking' and mAction == 'attacking':
+    if (pAction == 'attacking' or pAction == "fleeing-fail") and mAction == 'attacking':
         player_stats['hp'] = player_stats['hp'] - monster_stats['strength']
     elif mAction == 'attacking' and pAction == 'defending':
         if player_stats['armor'] < monster_stats['strength']:
@@ -72,14 +91,16 @@ def main():
     while continue_combat:
         planning_phase()
         combat_phase()
-        if player_stats['hp'] == 0 and monster_stats['hp'] == 0:
+        if player_stats['hp'] <= 0 and monster_stats['hp'] <= 0:
             print("\nIt's a draw! Game Over!")
             continue_combat = False
-        elif player_stats['hp'] == 0:
+        elif player_stats['hp'] <= 0:
             print("\nYou fall to the ground, broken and battered. Unable to continue on.\n\tGame Over!")
             continue_combat = False
-        elif monster_stats['hp'] == 0:
+        elif monster_stats['hp'] <= 0:
             print("\nThe monster falls into a crumpled mess, defeated. \n\tCongratulations, you are victorious!")
+            continue_combat = False
+        elif player_stats['current action'] == 'fleeing-success':
             continue_combat = False
     pass
 
