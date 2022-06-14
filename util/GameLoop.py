@@ -15,8 +15,8 @@ def set_defending(activeCharacter, active_char_stats):
         active_char_stats['current action'] = 'defending'
 
 def monster_behavior(monster_stats):
-    coin_toss = random.randint(1,2)
-    if coin_toss == 1:
+    coin_toss = random.randint(1, 100)
+    if coin_toss > 40:
         set_attacking('Monster', monster_stats)
     else:
         set_defending('Monster', monster_stats)
@@ -92,3 +92,23 @@ def combat_phase(player_stats, monster_stats):
     # if both characters choose defend
     if pAction == 'defending' and mAction == 'defending':
         print("You both are locked in a standoff, unwilling to budge.\n")
+
+def end_prompt(monsters_defeated, deaths):
+    valid_input = False
+    avail_menu_options = ['play', 'play again', 'record','my record', 'exit' ]
+    while not valid_input:
+        end_menu =input("\nWould like to play again or see your record and exit? ").lower().rstrip()
+        for action in avail_menu_options:
+            if action == end_menu:
+                valid_input = True
+                break
+    if (end_menu == avail_menu_options[0]) or (end_menu == avail_menu_options[1]):
+        return True
+    elif (end_menu == avail_menu_options[2]) or (end_menu == avail_menu_options[3]) or (end_menu == avail_menu_options[4]):
+        if deaths > 0:
+            k_d = monsters_defeated / deaths
+        else:
+            k_d = monsters_defeated
+        print(f"You have {monsters_defeated} monsters defeated and {deaths} deaths. Giving a K/D of {k_d}")
+        print("\nThank you for playing!")
+        return False
