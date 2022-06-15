@@ -24,7 +24,7 @@ def main(player_name, logged_in):
     # begin game loop
     # The driver, this will keep the turns going until 1 or both character have hp >= 0
     continue_combat = True
-    print("A monster has appeared!\n")
+    print("\nA monster has appeared!\n")
     while continue_combat:
         GameLoop.planning_phase(player_stats, monster_stats)
         GameLoop.combat_phase(player_stats, monster_stats)

@@ -1,5 +1,8 @@
 import os
 def create_save_game(player_name):
+    if not os.path.exists('Save Files'):
+        os.makedirs('Save Files')
+
     # create a new save if the file does not exist
     try:
         player_file = open(f'Save Files/{player_name}.txt', 'x' )

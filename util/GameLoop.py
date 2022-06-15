@@ -29,7 +29,7 @@ def planning_phase(player_stats, monster_stats):
     valid_input = False
     
     while not valid_input:
-        player_action = input('How will you proceed? \n\n\tAttack, Defend, or Flee: ').lower().rstrip()
+        player_action = input('How will you proceed? \n\tAttack, Defend, or Flee: ').lower().rstrip()
         for action in player_stats['avail_actions']:
             if action == player_action:
                 valid_input = True
