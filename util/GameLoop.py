@@ -1,3 +1,5 @@
+from util.input_output_handler import damage_text
+
 def planning_phase(player_char, monster_char):
     # prompts user for their action
     # calls for monster's action, maybe a rng
@@ -15,7 +17,7 @@ def planning_phase(player_char, monster_char):
     if player_action == 'attack':
         player_char.set_attacking()
     elif player_action == 'defend':
-        player_char.set_attacking()
+        player_char.set_defending()
     elif player_action == 'flee':
         player_char.attempt_flee()
 
@@ -37,49 +39,29 @@ def combat_phase(player_char, monster_char):
     # player's combat
     if pAction == 'attacking' and mAction == 'attacking':
         monster_char.hp = monster_char.hp - player_char.strength
-        print(f'Seeing an opportunity, you swing at the monster and deal a sizable blow of {player_char.strength} damage.\n')
+        damage_text('player', player_char.strength, 1)
     elif pAction == 'attacking' and mAction == 'defending':
         if monster_char.armor < player_char.strength:
             damage = player_char.strength - monster_char.armor
         else:
             damage = 0 # if armor > strength then damage to hp is 0
         monster_char.hp = monster_char.hp - damage
-        print(f'You thrust at the monster with your weapon, but it was prepared for your strike and gets by with only a glancing strike. You deal {damage} damage.\n')
+        damage_text('player', damage, 2)
     elif pAction == 'fleeing-success':
             return #break combat
 
     # monster's combat
     if (pAction == 'attacking' or pAction == "fleeing-fail") and mAction == 'attacking':
         player_char.hp = player_char.hp - monster_char.strength
-        print(f"The monster sees its opportunity and lunges at you, dealing {monster_char.strength} damage.")
+        damage_text('monster', monster_char.strength, 1)
     elif mAction == 'attacking' and pAction == 'defending':
         if player_char.armor < monster_char.strength:
             damage = monster_char.strength - player_char.armor
         else:
             damage = 0 # if armor > strength then damage to hp is 0
         player_char.hp = player_char.hp - damage
-        print(f'The monster visciously lashes out! Dealing {damage} damage.')
+        damage_text('monster', damage, 2)
 
     # if both characters choose defend
     if pAction == 'defending' and mAction == 'defending':
-        print("You both are locked in a standoff, unwilling to budge.\n")
-
-def end_prompt(monsters_defeated, deaths):
-    valid_input = False
-    avail_menu_options = ['play', 'play again', 'record','my record', 'exit' ]
-    while not valid_input:
-        end_menu =input("\nWould like to play again or see your record and exit? ").lower().rstrip()
-        for action in avail_menu_options:
-            if action == end_menu:
-                valid_input = True
-                break
-    if (end_menu == avail_menu_options[0]) or (end_menu == avail_menu_options[1]):
-        return True
-    elif (end_menu == avail_menu_options[2]) or (end_menu == avail_menu_options[3]) or (end_menu == avail_menu_options[4]):
-        if deaths > 0:
-            k_d = monsters_defeated / deaths
-        else:
-            k_d = monsters_defeated
-        print(f"You have {monsters_defeated} monsters defeated and {deaths} deaths. Giving a K/D of {k_d}")
-        print("\nThank you for playing!")
-        return False
+        damage_text('none', 0, 4)

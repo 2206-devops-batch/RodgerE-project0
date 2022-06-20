@@ -16,7 +16,7 @@ class monster:
         self.current_action = 'defending'
 
     def monster_behavior(self):
-        if random.randint(1, 100)> 40:
+        if random.randint(1, 100)> 60:
             self.set_attacking
         else:
             self.set_defending
