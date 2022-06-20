@@ -1,11 +1,19 @@
 import sys
 from util import GameLoop
 from util import SaveGame
+from util import player_stats
+from util import monster_stats
 
 def main(player_name, logged_in):
     # character defaults
-    player_stats = {'hp': 20, 'strength': 4, 'armor': 5, 'avail_actions': ("attack", "defend", "flee"), 'current action': 'attacking'}
-    monster_stats = {'hp': GameLoop.random.randint(1,5), 'strength': GameLoop.random.randint(6,9), 'armor': GameLoop.random.randint(1,3), 'avail_actions': ("attack", "defend"), 'current action': 'attacking'}
+    # player_stats = {'hp': 20, 'strength': 4, 'armor': 5, 'avail_actions': ("attack", "defend", "flee"), 'current action': 'attacking'}
+    # monster_stats = {'hp': GameLoop.random.randint(1,5), 'strength': GameLoop.random.randint(6,9), 'armor': GameLoop.random.randint(1,3), 'avail_actions': ("attack", "defend"), 'current action': 'attacking'}
+
+
+    player_character = player_stats.player()
+    monster_character = monster_stats.monster()
+
+
 
     if not player_name:
         player_name = input("Please enter your player name: ")
@@ -26,29 +34,29 @@ def main(player_name, logged_in):
     continue_combat = True
     print("\nA monster has appeared!\n")
     while continue_combat:
-        GameLoop.planning_phase(player_stats, monster_stats)
-        GameLoop.combat_phase(player_stats, monster_stats)
+        GameLoop.planning_phase(player_character, monster_character)
+        GameLoop.combat_phase(player_character, monster_character)
         # after combat ends, we'll need to record the outcome too.
-        if player_stats['hp'] <= 0 and monster_stats['hp'] <= 0:
+        if player_character.hp <= 0 and monster_character.hp <= 0:
             print("\nIt's a draw! Game Over!")
             # add to monsters_defeated and deaths. Then overwrite save
             monster_defeated += 1
             deaths += 1
             SaveGame.overwrite_save(player_name, monster_defeated, deaths)
             continue_combat = False
-        elif player_stats['hp'] <= 0:
+        elif player_character.hp <= 0:
             print("\nYou fall to the ground, broken and battered. Unable to continue on.\n\tGame Over!")
             # add to deaths. Then overwrite save
             deaths += 1
             SaveGame.overwrite_save(player_name, monster_defeated, deaths)
             continue_combat = False
-        elif monster_stats['hp'] <= 0:
+        elif monster_character.hp <= 0:
             # add to monsters_defeated. Then overwrite save
             print("\nThe monster falls into a crumpled mess, defeated. \n\tCongratulations, you are victorious!")
             monster_defeated += 1
             SaveGame.overwrite_save(player_name, monster_defeated, deaths)
             continue_combat = False
-        elif player_stats['current action'] == 'fleeing-success':
+        elif player_character.current_action == 'fleeing-success':
             continue_combat = False
     
     # provide an option to check win/loss record and exit -or- play another combat

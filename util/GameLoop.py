@@ -1,27 +1,4 @@
-import random
-def set_attacking(activeCharacter, active_char_stats):
-    # sets the current character's current action to 'attacking'
-    if activeCharacter == 'Player':
-        active_char_stats['current action'] = 'attacking'
-    elif activeCharacter == 'Monster':
-        active_char_stats['current action'] = 'attacking'
-    
-
-def set_defending(activeCharacter, active_char_stats):
-    # sets the current character's current action to 'defending'
-    if activeCharacter == 'Player':
-        active_char_stats['current action'] = 'defending'
-    elif activeCharacter == 'Monster':
-        active_char_stats['current action'] = 'defending'
-
-def monster_behavior(monster_stats):
-    coin_toss = random.randint(1, 100)
-    if coin_toss > 40:
-        set_attacking('Monster', monster_stats)
-    else:
-        set_defending('Monster', monster_stats)
-
-def planning_phase(player_stats, monster_stats):
+def planning_phase(player_char, monster_char):
     # prompts user for their action
     # calls for monster's action, maybe a rng
     # after setting the board passes to combat
@@ -30,63 +7,57 @@ def planning_phase(player_stats, monster_stats):
     
     while not valid_input:
         player_action = input('How will you proceed? \n\tAttack, Defend, or Flee: ').lower().rstrip()
-        for action in player_stats['avail_actions']:
+        for action in player_char.avail_actions:
             if action == player_action:
                 valid_input = True
                 break
 
     if player_action == 'attack':
-        set_attacking('Player', player_stats)
+        player_char.set_attacking()
     elif player_action == 'defend':
-        set_defending('Player', player_stats)
+        player_char.set_attacking()
     elif player_action == 'flee':
-        if random.randint(0, 100) > 80:
-            print("You run for your life, barely getting away from the beast.\n")
-            player_stats['current action'] = "fleeing-success"
-        else:
-            print("You attempt to break away, but the monster blocks your way.\n")
-            player_stats['current action'] = "fleeing-fail"
+        player_char.attempt_flee()
+
     # else:
     #     print("Please select an available option. \n\n\tAttack, Defend, Spells, or Flee: ")
     #     player_action = input('How will you proceed? \n\n\tAttack, Defend, Spells, or Flee: ').lower().rstrip()
 
     # what will the monster do?
-    monster_behavior(monster_stats)
+    monster_char.monster_behavior()
 
-    pass
-
-def combat_phase(player_stats, monster_stats):
+def combat_phase(player_char, monster_char):
     # strength stat vs hp if not defending
     # strength stat vs armor stat with overflow vs hp if defending
 
     # player will always move first in this demo but a speed stat may be implemented
-    pAction = player_stats['current action']
-    mAction = monster_stats['current action']
+    pAction = player_char.current_action
+    mAction = monster_char.current_action
 
     # player's combat
     if pAction == 'attacking' and mAction == 'attacking':
-        monster_stats['hp'] = monster_stats['hp'] - player_stats['strength']
-        print(f'Seeing an opportunity, you swing at the monster and deal a sizable blow of {player_stats["strength"]} damage.\n')
+        monster_char.hp = monster_char.hp - player_char.strength
+        print(f'Seeing an opportunity, you swing at the monster and deal a sizable blow of {player_char.strength} damage.\n')
     elif pAction == 'attacking' and mAction == 'defending':
-        if monster_stats['armor'] < player_stats['strength']:
-            damage = player_stats['strength'] - monster_stats['armor']
+        if monster_char.armor < player_char.strength:
+            damage = player_char.strength - monster_char.armor
         else:
             damage = 0 # if armor > strength then damage to hp is 0
-        monster_stats['hp'] = monster_stats['hp'] - damage
+        monster_char.hp = monster_char.hp - damage
         print(f'You thrust at the monster with your weapon, but it was prepared for your strike and gets by with only a glancing strike. You deal {damage} damage.\n')
-    elif player_stats['current action'] == 'fleeing-success':
+    elif pAction == 'fleeing-success':
             return #break combat
 
     # monster's combat
     if (pAction == 'attacking' or pAction == "fleeing-fail") and mAction == 'attacking':
-        player_stats['hp'] = player_stats['hp'] - monster_stats['strength']
-        print(f"The monster sees its opportunity and lunges at you, dealing {monster_stats['strength']} damage.")
+        player_char.hp = player_char.hp - monster_char.strength
+        print(f"The monster sees its opportunity and lunges at you, dealing {monster_char.strength} damage.")
     elif mAction == 'attacking' and pAction == 'defending':
-        if player_stats['armor'] < monster_stats['strength']:
-            damage = monster_stats['strength'] - player_stats['armor']
+        if player_char.armor < monster_char.strength:
+            damage = monster_char.strength - player_char.armor
         else:
             damage = 0 # if armor > strength then damage to hp is 0
-        player_stats['hp'] = player_stats['hp'] - damage
+        player_char.hp = player_char.hp - damage
         print(f'The monster visciously lashes out! Dealing {damage} damage.')
 
     # if both characters choose defend
