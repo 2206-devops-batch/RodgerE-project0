@@ -1,4 +1,5 @@
-import random, player_stats
+import random
+from util import player_stats
 def player_name_catch(player_name, logged_in):
     # if player name is empty then prompt user for name
     if not player_name:
@@ -61,9 +62,9 @@ def damage_text(character, dmg, situation):
     elif character == 'player' and situation == 2:
         print(f'You thrust at the monster with your weapon, but it was prepared for your strike and gets by with only a glancing strike. You deal {dmg} damage.\n')
     elif character == 'monster' and situation == 1:
-        print(f"The monster sees its opportunity and lunges at you, dealing {dmg} damage.")
+        print(f"The monster sees its opportunity and lunges at you, dealing {dmg} damage.\n")
     elif character == 'monster' and situation == 2:
-        print(f'The monster visciously lashes out! Dealing {dmg} damage.')
+        print(f'The monster visciously lashes out! Dealing {dmg} damage.\n')
     elif situation == 4:
         print("You both are locked in a standoff, unwilling to budge.\n")
 

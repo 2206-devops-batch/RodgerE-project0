@@ -1,7 +1,7 @@
 import shutil
 import unittest, os
-from util import SaveGame
-
+from util import SaveGame, GameLoop, player_stats, monster_stats, input_output_handler
+from unittest.mock import patch
 class Test_Save_Game(unittest.TestCase):
 
     def test_create_save_game(self):
@@ -51,23 +51,58 @@ class Test_Save_Game(unittest.TestCase):
 
 class Test_GameLoop(unittest.TestCase):
 
-    def test_set_attacking(self):
-        pass
-    
-    def test_set_defending(self):
-        pass
-
-    def test_monster_behavior(self):
-        pass
-    
     def test_planning_phase(self):
-        pass
+        player = player_stats.player()
+        monster = monster_stats.monster()
+        # player chooses attack
+        with patch('builtins.input', return_value='attack'):
+            GameLoop.planning_phase(player, monster)
+        self.assertEqual(player.current_action, "attacking")
+        # player chooses defend
+        with patch('builtins.input', return_value='defend'):
+            GameLoop.planning_phase(player, monster)
+        self.assertEqual(player.current_action, "defending")
+        # player chooses flee
+        with patch('builtins.input', return_value='flee'):
+            GameLoop.planning_phase(player, monster)
+        self.assertTrue(player.current_action, ("fleeing-success" or 'fleeing-fail'))
 
     def test_combat_phase(self):
-        pass
+        player = player_stats.player()
+        monster = monster_stats.monster()
+        monster_old_hp = monster.hp
+        # if both are attacking
+        GameLoop.combat_phase(player, monster)
+        self.assertNotEqual(player.hp, 20)
+        self.assertNotEqual(monster.hp, monster_old_hp)
 
-    def test_end_prompt(self):
-        pass
+        player = player_stats.player()
+        monster = monster_stats.monster()
+        monster_old_hp = monster.hp
+        # If player attacks but monster defends
+        monster.current_action = 'defending'
+        GameLoop.combat_phase(player, monster)
+        self.assertEqual(player.hp, 20)
+        self.assertNotEqual(monster.hp, monster_old_hp)
+
+        player = player_stats.player()
+        monster = monster_stats.monster()
+        monster_old_hp = monster.hp
+        # if player defends but monster attacks
+        player.current_action = 'defending'
+        GameLoop.combat_phase(player, monster)
+        self.assertNotEqual(player.hp, 20)
+        self.assertEqual(monster.hp, monster_old_hp)
+
+        player = player_stats.player()
+        monster = monster_stats.monster()
+        monster_old_hp = monster.hp
+        # if both choose defend
+        player.current_action = 'defending'
+        monster.current_action = 'defending'
+        GameLoop.combat_phase(player, monster)
+        self.assertEqual(player.hp, 20)
+        self.assertEqual(monster.hp, monster_old_hp)
 
 class Test_Adventure(unittest.TestCase):
 
