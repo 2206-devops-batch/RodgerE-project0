@@ -1,4 +1,4 @@
-import random
+import random, player_stats
 def player_name_catch(player_name, logged_in):
     # if player name is empty then prompt user for name
     if not player_name:
@@ -44,6 +44,16 @@ def end_prompt(monsters_defeated, deaths):
         print(f"You have {monsters_defeated} monsters defeated and {deaths} deaths. Giving a K/D of {k_d}")
         print("\nThank you for playing!")
         return False
+
+def planning_input():
+    valid_input = False
+    while not valid_input:
+        player_action = input('How will you proceed? \n\tAttack, Defend, or Flee: ').lower().rstrip()
+        for action in player_stats.player.avail_actions:
+            if action == player_action:
+                valid_input = True
+                break
+    return player_action
 
 def damage_text(character, dmg, situation):
     if character == 'player' and situation == 1:

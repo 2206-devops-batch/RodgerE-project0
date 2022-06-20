@@ -1,29 +1,17 @@
-from util.input_output_handler import damage_text
+from util.input_output_handler import damage_text, planning_input
 
 def planning_phase(player_char, monster_char):
     # prompts user for their action
     # calls for monster's action, maybe a rng
     # after setting the board passes to combat
-    # print('How will you proceed? \n\n\tAttack, Defend, Spells, or Flee: ')
-    valid_input = False
-    
-    while not valid_input:
-        player_action = input('How will you proceed? \n\tAttack, Defend, or Flee: ').lower().rstrip()
-        for action in player_char.avail_actions:
-            if action == player_action:
-                valid_input = True
-                break
-
+    # what will the player do?
+    player_action = planning_input()
     if player_action == 'attack':
         player_char.set_attacking()
     elif player_action == 'defend':
         player_char.set_defending()
     elif player_action == 'flee':
         player_char.attempt_flee()
-
-    # else:
-    #     print("Please select an available option. \n\n\tAttack, Defend, Spells, or Flee: ")
-    #     player_action = input('How will you proceed? \n\n\tAttack, Defend, Spells, or Flee: ').lower().rstrip()
 
     # what will the monster do?
     monster_char.monster_behavior()
