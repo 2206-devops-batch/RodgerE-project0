@@ -12,7 +12,8 @@ def player_name_catch(player_name, logged_in):
 
 def intial_encounter_text():
     # modular way of adding more kinds of intial flavor text
-    flavor_text = ["\nA monster has appeared!\n", "\nA beserk kappa appears!\n", "\nA golem blocks the way!\n", "\nA stray Kobold brandishes a knife!\n", "\nA slime slithers in your way!\n"]
+    flavor_text = ["\nA monster has appeared!\n"]
+    # , "\nA beserk kappa appears!\n", "\nA golem blocks the way!\n", "\nA stray Kobold brandishes a knife!\n", "\nA slime slithers in your way!\n"]
     x = random.randint(0, (len(flavor_text)-1))
     print(flavor_text[x])    
 
@@ -42,8 +43,7 @@ def end_prompt(monsters_defeated, deaths):
             k_d = monsters_defeated / deaths
         else:
             k_d = monsters_defeated
-        print(f"You have {monsters_defeated} monsters defeated and {deaths} deaths. Giving a K/D of {k_d}")
-        print("\nThank you for playing!")
+        print(f"\nYou have {monsters_defeated} monsters defeated and {deaths} deaths. Giving a K/D of {k_d}\nThank you for playing!")
         return False
 
 def planning_input():
